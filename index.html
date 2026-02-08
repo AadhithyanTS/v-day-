@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Will You Be My Valentine?</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ---------- PAGE 1 ---------- */
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 22px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 2.2em;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 25px;
+    }
+
+    button {
+      padding: 12px 28px;
+      font-size: 1em;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin: 10px;
+      transition: transform 0.2s ease;
+    }
+
+    #yesBtn {
+      background-color: #ff4d6d;
+      color: white;
+    }
+
+    #noBtn {
+      background-color: #eee;
+    }
+
+    /* Shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    /* ---------- PAGE 2 ---------- */
+    .love-page {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      flex-direction: column;
+      color: white;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .love-page h1 {
+      font-size: 3.5em;
+      margin-bottom: 15px;
+      color: white;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .love-page p {
+      font-size: 1.4em;
+      max-width: 520px;
+      line-height: 1.6;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="hearts"></canvas>
+
+  <!-- PAGE 1 -->
+  <div class="page" id="page1">
+    <div class="card">
+      <h1>💖 Will you be my Valentine? 💖</h1>
+      <p>You make my world brighter every single day.</p>
+
+      <button id="yesBtn">Yes 💕</button>
+      <button id="noBtn">No 🙃</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page love-page hidden" id="page2">
+    <h1>YAY 💘</h1>
+    <p>
+      I can’t wait to spend this Valentine’s Day with you.<br>
+      You mean more to me than words can say ❤️
+    </p>
+  </div>
+
+  <!-- MUSIC -->
+  <audio id="bgMusic">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const music = document.getElementById("bgMusic");
+
+    let yesScale = 1;
+
+    /* ---------- NO BUTTON ---------- */
+    noBtn.onclick = () => {
+      noBtn.classList.add("shake");
+      setTimeout(() => noBtn.classList.remove("shake"), 300);
+
+      yesScale += 0.15;
+      yesBtn.style.transform = `scale(${yesScale})`;
+    };
+
+    /* ---------- HEART RAIN ---------- */
+    const canvas = document.getElementById("hearts");
+    const ctx = canvas.getContext("2d");
+    canvas.width = innerWidth;
+    canvas.height = innerHeight;
+
+    const hearts = [];
+
+    function createHeart() {
+      hearts.push({
+        x: Math.random() * canvas.width,
+        y: -20,
+        size: Math.random() * 10 + 10,
+        speed: Math.random() * 2 + 1
+      });
+    }
+
+    function drawHeart(x, y, size) {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - size, y - size, x - size * 2, y + size / 3, x, y + size);
+      ctx.bezierCurveTo(x + size * 2, y + size / 3, x + size, y - size, x, y);
+      ctx.fill();
+    }
+
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach(h => {
+        drawHeart(h.x, h.y, h.size);
+        h.y += h.speed;
+      });
+      requestAnimationFrame(animateHearts);
+    }
+
+    /* ---------- YES BUTTON ---------- */
+    yesBtn.onclick = () => {
+      music.play();
+
+      document.getElementById("page1").classList.add("hidden");
+      setTimeout(() => {
+        document.getElementById("page2").classList.remove("hidden");
+      }, 500);
+
+      setInterval(createHeart, 300);
+      animateHearts();
+    };
+  </script>
+
+</body>
+</html>
